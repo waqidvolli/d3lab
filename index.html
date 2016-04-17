@@ -47,6 +47,13 @@
 
    var headers = rows.shift();
 
+   // Parse data
+   rows = rows.map(function(row) {
+     return row.map(function(val) {
+       return +val;
+     });
+   });
+
    // Fill dropdowns
    $("select").each(function(_, dropdown) {
      $.each(headers, function(i, name) {
