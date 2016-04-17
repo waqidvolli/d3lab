@@ -40,18 +40,16 @@
              .append("g")
              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
- d3.text("car.csv", function(text) {
-   var rows = d3.csv.parseRows(text).map(function(row) {
-     return row.slice(1, -1);
-   });
+ var xCol = function() { return +$("#sel-x").val(); }
+ var yCol = function() { return +$("#sel-y").val(); }
 
-   var headers = rows.shift();
+ d3.text("car.csv", function(text) {
+   var rows = d3.csv.parseRows(text);
+   var headers = rows.shift().slice(1, -1);
 
    // Parse data
    rows = rows.map(function(row) {
-     return row.map(function(val) {
-       return +val;
-     });
+     return row.map(function(val) { return +val; });
    });
 
    // Fill dropdowns
@@ -60,6 +58,12 @@
        $(dropdown).append($("<option></option>").attr("value",i).text(name));
      });
    });
+
+   var getPoints = function(x, y) {
+     return rows.map(function(row) {
+       return [row[x+1], row[y+1]];
+     });
+   };
  });
 </script>
 </body>
