@@ -12,6 +12,11 @@
        stroke: #000;
        shape-rendering: crispEdges;
    }
+
+   .dot {
+       stroke: #000;
+       fill: #1F77B4;
+   }
   </style>
 </head>
 <body>
@@ -103,6 +108,14 @@
       .attr("dy", ".71em")
       .style("text-anchor", "end")
       .text(yTitle);
+
+   svg.selectAll(".dot")
+      .data(data)
+      .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d[0]); })
+      .attr("cy", function(d) { return y(d[1]); });
  });
 </script>
 </body>
