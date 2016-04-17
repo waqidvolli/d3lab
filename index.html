@@ -12,11 +12,9 @@
   <div>
     <label>X-Axis</label>
     <select id="sel-x">
-      <option value="mpg">mpg</option>
     </select>
     <label>Y-Axis</label>
     <select id="sel-y">
-      <option value="">displacement</option>
     </select>
   </div>
   <div>
@@ -33,6 +31,13 @@
    });
 
    var headers = rows.shift();
+
+   // Fill dropdowns
+   $("select").each(function(_, dropdown) {
+     $.each(headers, function(i, name) {
+       $(dropdown).append($("<option></option>").attr("value",i).text(name));
+     });
+   });
  });
 </script>
 </body>
