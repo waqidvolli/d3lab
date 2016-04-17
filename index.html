@@ -30,13 +30,13 @@
 
 
 <script>
-d3.csv('car.csv').row(function(d){
-  return{key: d.key, value: +d.value};
-}).get(function(error,rows){
-  console.log(rows);
-})
+ d3.text("car.csv", function(text) {
+   var rows = d3.csv.parseRows(text).map(function(row) {
+     return row.slice(1, -1);
+   });
 
+   var headers = rows.shift();
+ });
 </script>
 </body>
 </html>
-
