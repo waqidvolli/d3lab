@@ -77,7 +77,7 @@
 
    var getPoints = function(x, y) {
      return rows.map(function(row) {
-       return [row[x+1], row[y+1]];
+       return {x: row[x+1], y: row[y+1], name: row[0]};
      });
    };
 
@@ -106,8 +106,8 @@
      var yTitle = headers[yCol()];
      var data = getPoints(xCol(), yCol());
 
-     x.domain(d3.extent(data, function(d) { return d[0]; })).nice();
-     y.domain(d3.extent(data, function(d) { return d[1]; })).nice();
+     x.domain(d3.extent(data, function(d) { return d.x; })).nice();
+     y.domain(d3.extent(data, function(d) { return d.y; })).nice();
 
      svg.selectAll("g .x.axis").call(xAxis);
      svg.selectAll("g .y.axis").call(yAxis);
@@ -119,15 +119,15 @@
      var t = d3.transition().duration(750);
 
      dots.transition(t)
-         .attr("cx", function(d) { return x(d[0]); })
-         .attr("cy", function(d) { return y(d[1]); });
+         .attr("cx", function(d) { return x(d.x); })
+         .attr("cy", function(d) { return y(d.y); });
 
      dots.enter()
          .append("circle")
          .attr("class", "dot")
          .attr("r", 3.5)
-         .attr("cx", function(d) { return x(d[0]); })
-         .attr("cy", function(d) { return y(d[1]); });
+         .attr("cx", function(d) { return x(d.x); })
+         .attr("cy", function(d) { return y(d.y); });
 
      dots.exit().remove();
    };
