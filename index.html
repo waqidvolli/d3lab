@@ -56,35 +56,19 @@
              .append("g")
              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
- var xCol = function() { return +$("#sel-x").val(); }
- var yCol = function() { return +$("#sel-y").val(); }
  var setTitle = function(text = '\xa0') {
    $('#hovered').text(text);
  }
 
- d3.text("car.csv", function(text) {
-   var rows = d3.csv.parseRows(text);
-   var headers = rows.shift().slice(1, -1);
-
-   // Parse data
-   rows = rows.map(function(row) {
-     var name = row[0];
-     var properties = row.slice(1, -1).map(function(val) { return +val; });
-     return [name].concat(properties);
-   });
+ d3.csv("car.csv").get(function(error, data) {
+   var headers = Object.keys(data[0]).slice(1, -1);
 
    // Fill dropdowns
    $("select").each(function(_, dropdown) {
-     $.each(headers, function(i, name) {
-       $(dropdown).append($("<option></option>").attr("value",i).text(name));
+     $.each(headers, function(_, name) {
+       $(dropdown).append($("<option></option>").attr("value",name).text(name));
      });
    });
-
-   var getPoints = function(x, y) {
-     return rows.map(function(row) {
-       return {x: row[x+1], y: row[y+1], name: row[0]};
-     });
-   };
 
    var xLabel = svg.append("g")
       .attr("class", "x axis")
@@ -107,33 +91,32 @@
       .style("text-anchor", "end");
 
    var renderPlot = function() {
-     var xTitle = headers[xCol()];
-     var yTitle = headers[yCol()];
-     var data = getPoints(xCol(), yCol());
+     var xCol = $("#sel-x").val();
+     var yCol = $("#sel-y").val();
 
-     x.domain(d3.extent(data, function(d) { return d.x; })).nice();
-     y.domain(d3.extent(data, function(d) { return d.y; })).nice();
+     x.domain(d3.extent(data, function(d) { return +d[xCol]; })).nice();
+     y.domain(d3.extent(data, function(d) { return +d[yCol]; })).nice();
 
      svg.selectAll("g .x.axis").call(xAxis);
      svg.selectAll("g .y.axis").call(yAxis);
-     xLabel.text(xTitle);
-     yLabel.text(yTitle);
+     xLabel.text(xCol);
+     yLabel.text(yCol);
 
      var dots = svg.selectAll(".dot").data(data);
 
      var t = d3.transition().duration(750);
 
      dots.transition(t)
-         .attr("cx", function(d) { return x(d.x); })
-         .attr("cy", function(d) { return y(d.y); });
+         .attr("cx", function(d) { return x(+d[xCol]); })
+         .attr("cy", function(d) { return y(+d[yCol]); });
 
      dots.enter()
          .append("circle")
          .attr("class", "dot")
          .attr("r", 3.5)
-         .attr("cx", function(d) { return x(d.x); })
-         .attr("cy", function(d) { return y(d.y); })
-         .on("mouseover", function(d) { setTitle(d.name) })
+         .attr("cx", function(d) { return x(+d[xCol]); })
+         .attr("cy", function(d) { return y(+d[yCol]); })
+         .on("mouseover", function(d) { setTitle(d['name']) })
          .on("mouseout", function(d) { setTitle() });
 
      dots.exit().remove();
