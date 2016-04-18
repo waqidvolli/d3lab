@@ -81,13 +81,7 @@
      });
    };
 
-   var data = getPoints(xCol(), yCol());
-   var xTitle = headers[xCol()];
-   var yTitle = headers[yCol()];
-   x.domain(d3.extent(data, function(d) { return d[0]; })).nice();
-   y.domain(d3.extent(data, function(d) { return d[1]; })).nice();
-
-   svg.append("g")
+   var xLabel = svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
@@ -95,10 +89,9 @@
       .attr("class", "label")
       .attr("x", width)
       .attr("y", -6)
-      .style("text-anchor", "end")
-      .text(xTitle);
+      .style("text-anchor", "end");
 
-   svg.append("g")
+   var yLabel = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis)
       .append("text")
@@ -106,16 +99,44 @@
       .attr("transform", "rotate(-90)")
       .attr("y", 6)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text(yTitle);
+      .style("text-anchor", "end");
 
-   svg.selectAll(".dot")
-      .data(data)
-      .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", 3.5)
-      .attr("cx", function(d) { return x(d[0]); })
-      .attr("cy", function(d) { return y(d[1]); });
+   var renderPlot = function() {
+     var xTitle = headers[xCol()];
+     var yTitle = headers[yCol()];
+     var data = getPoints(xCol(), yCol());
+
+     x.domain(d3.extent(data, function(d) { return d[0]; })).nice();
+     y.domain(d3.extent(data, function(d) { return d[1]; })).nice();
+
+     svg.selectAll("g .x.axis").call(xAxis);
+     svg.selectAll("g .y.axis").call(yAxis);
+     xLabel.text(xTitle);
+     yLabel.text(yTitle);
+
+     var dots = svg.selectAll(".dot").data(data);
+
+     var t = d3.transition().duration(750);
+
+     dots.transition(t)
+         .attr("cx", function(d) { return x(d[0]); })
+         .attr("cy", function(d) { return y(d[1]); });
+
+     dots.enter()
+         .append("circle")
+         .attr("class", "dot")
+         .attr("r", 3.5)
+         .attr("cx", function(d) { return x(d[0]); })
+         .attr("cy", function(d) { return y(d[1]); });
+
+     dots.exit().remove();
+   };
+
+   renderPlot();
+
+   $('select').each(function(_, dropdown) {
+     $(dropdown).change(renderPlot);
+   });
  });
 </script>
 </body>
