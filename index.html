@@ -4,7 +4,7 @@
   <script src="bower_components/d3/d3.min.js"></script>
   <style>
    body {
-       font: 10px sans-serif;
+       font: 12px sans-serif;
    }
    .axis path,
    .axis line {
@@ -20,7 +20,7 @@
   </style>
 </head>
 <body>
-<h4 id="hovered">chevrolet chevelle malibu</h4>
+<h4 id="hovered">&nbsp;</h4>
 <div class="plot"></div>
 <div class="ui">
   <div>
@@ -58,6 +58,9 @@
 
  var xCol = function() { return +$("#sel-x").val(); }
  var yCol = function() { return +$("#sel-y").val(); }
+ var setTitle = function(text = '\xa0') {
+   $('#hovered').text(text);
+ }
 
  d3.text("car.csv", function(text) {
    var rows = d3.csv.parseRows(text);
@@ -65,7 +68,9 @@
 
    // Parse data
    rows = rows.map(function(row) {
-     return row.map(function(val) { return +val; });
+     var name = row[0];
+     var properties = row.slice(1, -1).map(function(val) { return +val; });
+     return [name].concat(properties);
    });
 
    // Fill dropdowns
@@ -127,7 +132,9 @@
          .attr("class", "dot")
          .attr("r", 3.5)
          .attr("cx", function(d) { return x(d.x); })
-         .attr("cy", function(d) { return y(d.y); });
+         .attr("cy", function(d) { return y(d.y); })
+         .on("mouseover", function(d) { setTitle(d.name) })
+         .on("mouseout", function(d) { setTitle() });
 
      dots.exit().remove();
    };
