@@ -45,9 +45,10 @@
              .append("g")
              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
- var setTitle = function(text = '\xa0') {
-   $('#hovered').text(text);
- }
+ var setTitle = function(text) {
+   var content = text || '\xa0';
+   $('#hovered').text(content);
+ };
 
  d3.csv("car.csv").get(function(error, data) {
    var headers = Object.keys(data[0]).slice(1, -1);
