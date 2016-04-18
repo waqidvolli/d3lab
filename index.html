@@ -90,19 +90,26 @@
       .attr("dy", ".71em")
       .style("text-anchor", "end");
 
-   var renderPlot = function() {
+   var renderPlot = function(filterMin, filterMax) {
      var xCol = $("#sel-x").val();
      var yCol = $("#sel-y").val();
 
-     x.domain(d3.extent(data, function(d) { return +d[xCol]; })).nice();
-     y.domain(d3.extent(data, function(d) { return +d[yCol]; })).nice();
+     var min = filterMin || Number.MIN_VALUE;
+     var max = filterMax || Number.MAX_VALUE;
+
+     var filteredData = data.filter(function(car) {
+       return +car.mpg >= min && +car.mpg <= max;
+     });
+
+     x.domain(d3.extent(filteredData, function(d) { return +d[xCol]; })).nice();
+     y.domain(d3.extent(filteredData, function(d) { return +d[yCol]; })).nice();
 
      svg.selectAll("g .x.axis").call(xAxis);
      svg.selectAll("g .y.axis").call(yAxis);
      xLabel.text(xCol);
      yLabel.text(yCol);
 
-     var dots = svg.selectAll(".dot").data(data);
+     var dots = svg.selectAll(".dot").data(filteredData);
 
      var t = d3.transition().duration(750);
 
@@ -122,11 +129,18 @@
      dots.exit().remove();
    };
 
-   renderPlot();
-
    $('select').each(function(_, dropdown) {
-     $(dropdown).change(renderPlot);
+     $(dropdown).change(function() { renderPlot() });
    });
+
+   $("#update").click(function() {
+     var min = +$("#mpg-min").val();
+     var max = +$("#mpg-max").val();
+
+     renderPlot(min, max);
+   });
+
+   renderPlot();
  });
 </script>
 </body>
